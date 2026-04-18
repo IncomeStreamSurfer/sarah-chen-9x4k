@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  pathname?: string;
+  jsonLd?: Record<string, any> | Record<string, any>[];
+}
+
+const {
+  title,
+  description = 'Sarah Chen is a freelance brand designer building quiet, considered identity systems for emerging studios, publishers, and fashion houses.',
+  ogImage = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80',
+  pathname = Astro.url.pathname,
+  jsonLd,
+} = Astro.props;
+
+const site = import.meta.env.PUBLIC_SITE_URL || Astro.site?.toString() || 'https://sarah-chen.vercel.app';
+const canonical = new URL(pathname, site).toString();
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Sarah Chen',
+  jobTitle: 'Freelance Brand Designer',
+  url: site,
+  sameAs: [],
+};
+const ldPayload = jsonLd ? [personLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : [personLd];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {ldPayload.map((ld) => (
+      <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
+    <Nav />
+    <main class="min-h-[60vh]">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

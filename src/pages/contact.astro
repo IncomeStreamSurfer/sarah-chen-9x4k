@@ -1,0 +1,127 @@
+---
+import Base from '../layouts/Base.astro';
+
+const success = Astro.url.searchParams.get('sent') === '1';
+const error = Astro.url.searchParams.get('error');
+---
+
+<Base
+  title="Contact — Sarah Chen"
+  description="Start a conversation with Sarah Chen about your next brand project."
+>
+  <section class="px-6 md:px-12 pt-16 md:pt-24 pb-10">
+    <div class="mx-auto max-w-[1400px] grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-7">
+        <p class="eyebrow mb-8">Contact</p>
+        <h1 class="display text-5xl md:text-8xl leading-[0.95]">
+          Tell me about <span class="display-italic">the work</span>.
+        </h1>
+      </div>
+      <div class="md:col-span-4 md:col-start-9 self-end">
+        <p class="text-lg leading-relaxed text-[var(--color-muted)]">
+          I reply within two working days. If our timing or scope doesn&apos;t align,
+          I&apos;ll happily point you toward a designer whose work I admire.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-12 pb-32">
+    <div class="mx-auto max-w-[1400px] grid md:grid-cols-12 gap-10">
+      <aside class="md:col-span-4 text-sm space-y-8">
+        <div>
+          <p class="eyebrow mb-2">Email directly</p>
+          <a href="mailto:sarah@example.com" class="display-italic text-xl link-underline">
+            sarah@example.com
+          </a>
+        </div>
+        <div>
+          <p class="eyebrow mb-2">Studio</p>
+          <p>Unit 4, Hackney Downs Studios<br />London, E8</p>
+        </div>
+        <div>
+          <p class="eyebrow mb-2">What I&apos;m looking for</p>
+          <p class="text-[var(--color-muted)] leading-relaxed">
+            Projects where typography leads the voice — brand systems, packaging,
+            and editorial. Six-week minimums.
+          </p>
+        </div>
+      </aside>
+
+      <form
+        method="POST"
+        action="/api/contact"
+        class="md:col-span-7 md:col-start-6 space-y-10"
+      >
+        {success && (
+          <div class="border border-[var(--color-ink)]/20 px-5 py-4 text-sm">
+            <p class="display-italic text-lg">Thank you.</p>
+            <p class="text-[var(--color-muted)] mt-1">
+              Your note is in my inbox. I&apos;ll reply within two working days.
+            </p>
+          </div>
+        )}
+        {error && (
+          <div class="border border-red-500/30 px-5 py-4 text-sm text-red-700">
+            Something went wrong: {error}. Please try again or email directly.
+          </div>
+        )}
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <label class="block">
+            <span class="eyebrow">Your name</span>
+            <input
+              required
+              name="name"
+              type="text"
+              class="mt-3 block w-full border-0 border-b border-[var(--color-ink)]/25 bg-transparent pb-2 text-lg focus:border-[var(--color-ink)] focus:outline-none focus:ring-0"
+            />
+          </label>
+          <label class="block">
+            <span class="eyebrow">Email</span>
+            <input
+              required
+              name="email"
+              type="email"
+              class="mt-3 block w-full border-0 border-b border-[var(--color-ink)]/25 bg-transparent pb-2 text-lg focus:border-[var(--color-ink)] focus:outline-none focus:ring-0"
+            />
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="eyebrow">Subject</span>
+          <input
+            name="subject"
+            type="text"
+            placeholder="Identity project · launching Q3"
+            class="mt-3 block w-full border-0 border-b border-[var(--color-ink)]/25 bg-transparent pb-2 text-lg focus:border-[var(--color-ink)] focus:outline-none focus:ring-0 placeholder:text-[var(--color-muted)]/50"
+          />
+        </label>
+
+        <label class="block">
+          <span class="eyebrow">Tell me about the project</span>
+          <textarea
+            required
+            name="message"
+            rows="6"
+            class="mt-3 block w-full border-0 border-b border-[var(--color-ink)]/25 bg-transparent pb-2 text-lg focus:border-[var(--color-ink)] focus:outline-none focus:ring-0 resize-none"
+          ></textarea>
+        </label>
+
+        <!-- Honeypot -->
+        <div class="hidden" aria-hidden="true">
+          <label>Leave blank<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="pt-4">
+          <button
+            type="submit"
+            class="display-italic text-3xl md:text-4xl link-underline"
+          >
+            Send it →
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</Base>

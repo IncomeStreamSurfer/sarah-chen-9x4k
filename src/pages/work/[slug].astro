@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getProjectBySlug, getProjects } from '../../lib/supabase';
+
+const { slug } = Astro.params;
+const project = slug ? await getProjectBySlug(slug) : null;
+
+if (!project) {
+  return Astro.redirect('/work');
+}
+
+const all = await getProjects();
+const idx = all.findIndex((p) => p.slug === project.slug);
+const next = all[(idx + 1) % all.length];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.title,
+  creator: { '@type': 'Person', name: 'Sarah Chen' },
+  dateCreated: project.year ? String(project.year) : undefined,
+  about: project.category,
+  description: project.summary,
+  image: project.cover_image_url,
+};
+---
+
+<Base
+  title={`${project.title} — Sarah Chen`}
+  description={project.summary ?? undefined}
+  ogImage={project.cover_image_url ?? undefined}
+  jsonLd={jsonLd}
+>
+  <article>
+    <!-- Title -->
+    <section class="px-6 md:px-12 pt-14 md:pt-20 pb-10">
+      <div class="mx-auto max-w-[1400px]">
+        <p class="eyebrow mb-6">
+          {project.category}{project.year ? ` · ${project.year}` : ''}
+        </p>
+        <h1 class="display text-5xl md:text-8xl max-w-[16ch]">{project.title}</h1>
+        {project.summary && (
+          <p class="display-italic text-2xl md:text-3xl mt-8 max-w-[30ch] text-[var(--color-muted)]">
+            {project.summary}
+          </p>
+        )}
+      </div>
+    </section>
+
+    <!-- Cover -->
+    {project.cover_image_url && (
+      <section class="px-6 md:px-12 pb-16">
+        <div class="mx-auto max-w-[1400px]">
+          <div
+            class="aspect-[16/9] overflow-hidden"
+            style={`background-color: ${project.accent_color ?? '#e8e1d5'};`}
+          >
+            <img
+              src={project.cover_image_url}
+              alt={project.title}
+              class="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Body + meta -->
+    <section class="px-6 md:px-12 pb-32">
+      <div class="mx-auto max-w-[1400px] grid md:grid-cols-12 gap-10">
+        <aside class="md:col-span-3 text-sm space-y-8">
+          {project.client && (
+            <div>
+              <p class="eyebrow mb-2">Client</p>
+              <p>{project.client}</p>
+            </div>
+          )}
+          {project.category && (
+            <div>
+              <p class="eyebrow mb-2">Discipline</p>
+              <p>{project.category}</p>
+            </div>
+          )}
+          {project.year && (
+            <div>
+              <p class="eyebrow mb-2">Year</p>
+              <p>{project.year}</p>
+            </div>
+          )}
+        </aside>
+        <div class="md:col-span-8 md:col-start-5 text-lg md:text-xl leading-relaxed text-[var(--color-ink)]/85 space-y-6">
+          {project.body && project.body.split(/\n\n+/).map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- Next -->
+    {next && (
+      <section class="px-6 md:px-12 pb-32">
+        <div class="mx-auto max-w-[1400px]">
+          <div class="hairline mb-10"></div>
+          <div class="flex items-baseline justify-between">
+            <p class="eyebrow">Next project</p>
+            <a href={`/work/${next.slug}`} class="display text-3xl md:text-5xl link-underline">
+              {next.title} →
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>

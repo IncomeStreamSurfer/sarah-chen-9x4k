@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/supabase';
+
+const projects = await getProjects();
+---
+
+<Base
+  title="Work — Sarah Chen"
+  description="Selected brand identity, packaging, and editorial projects by Sarah Chen."
+>
+  <section class="px-6 md:px-12 pt-16 md:pt-24 pb-14">
+    <div class="mx-auto max-w-[1400px]">
+      <p class="eyebrow mb-8">Index · {projects.length} projects</p>
+      <h1 class="display text-6xl md:text-8xl max-w-[14ch]">
+        A decade of <span class="display-italic">quiet</span> work.
+      </h1>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-12 pb-32">
+    <div class="mx-auto max-w-[1400px]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-20">
+        {projects.map((project, i) => (
+          <ProjectCard project={project} index={i} />
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
