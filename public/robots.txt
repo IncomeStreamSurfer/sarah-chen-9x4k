@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sarah-chen.vercel.app/sitemap.xml
